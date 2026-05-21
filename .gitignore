@@ -1,0 +1,272 @@
+# Raw and processed data — regenerated from Phase 1
+data/raw/*
+data/processed/*
+data/features/*
+
+# Trained model weights — regenerated from Phase 3 (potentially large)
+models_saved/*
+
+# Generated outputs from pipeline runs
+results/figures/*
+results/metrics/*
+results/reports/*
+results/predictions/*
+results/portfolios/*
+
+# But KEEP the folder structure (empty placeholders are allowed)
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/features/.gitkeep
+!models_saved/.gitkeep
+!results/figures/.gitkeep
+!results/metrics/.gitkeep
+!results/reports/.gitkeep
+!results/predictions/.gitkeep
+!results/portfolios/.gitkeep
+
+# Common data file extensions anywhere in the repo
+*.csv
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.npy
+*.npz
+
+# Trained ML model files
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.h5
+*.keras
+*.tflite
+
+# Large binary outputs
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+
+# PYTHON
+
+# Byte-compiled / optimised / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+
+# VIRTUAL ENVIRONMENTS
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+
+# JUPYTER / IPYTHON
+
+
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+profile_default/
+ipython_config.py
+
+
+# SECRETS / CREDENTIALS — NEVER COMMIT
+
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+credentials.json
+secrets.json
+*.secret
+api_keys.txt
+config_local.py
+.aws/
+.gcp/
+
+
+# EDITORS / IDEs
+
+# VS Code 
+.vscode/
+*.code-workspace
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Spyder
+.spyderproject
+.spyproject
+
+# Rope
+.ropeproject
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# OS-SPECIFIC
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# DEEP LEARNING FRAMEWORK ARTIFACTS
+
+# PyTorch
+lightning_logs/
+*.ptl
+
+# TensorFlow
+checkpoints/
+*.tfevents.*
+saved_model/
+
+# Weights & Biases
+wandb/
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# TensorBoard logs
+runs/
+tb_logs/
+
+# Hugging Face cache
+.cache/
+
+# LOGS & DEBUGGING
+
+*.log
+logs/
+log/
+*.out
+*.err
+debug.txt
+nohup.out
+
+
+# DOCUMENTATION BUILDS
+
+docs/_build/
+site/
+.sphinx-build/
+
+# COLAB / CLOUD
+
+# Colab session artefacts (if syncing from Colab)
+.config/
+sample_data/
