@@ -1,6 +1,5 @@
 """
 Historical Volatility Model
-============================
 Simple baseline: uses past N-day standard deviation as the volatility forecast.
 Assumes future volatility = recent realised volatility.
 """
