@@ -26,12 +26,6 @@ class HistoricalVolatilityModel:
         self.name       = f"HistVol_{window}d"
 
     def forecast(self, returns: pd.Series) -> pd.Series:
-        """
-        Generate one-step-ahead volatility forecasts.
-        Returns a Series indexed identically to `returns`,
-        where each value is the predicted volatility for that day
-        based on the previous `window` days.
-        """
         vol = returns.rolling(self.window).std().shift(1)   # shift to avoid look-ahead
         if self.annualise:
             vol = vol * np.sqrt(252)
