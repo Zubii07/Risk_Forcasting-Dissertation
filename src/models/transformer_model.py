@@ -1,6 +1,4 @@
 """
-Transformer Volatility Forecasting Model (PRIMARY MODEL)
-=========================================================
 Transformer encoder using self-attention to capture long-range
 temporal dependencies in financial return sequences.
 
