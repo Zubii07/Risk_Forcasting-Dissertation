@@ -1,9 +1,5 @@
 """
-Shared helpers for LSTM & Transformer training:
-  - Sequence/window builder
-  - PyTorch Dataset
-  - Training loop with early stopping
-  - Volatility target construction
+Shared helpers for LSTM & Transformer training
 """
 
 import numpy as np
