@@ -4,7 +4,6 @@ from arch import arch_model
 import warnings
 warnings.filterwarnings("ignore")
 
-
 class GARCHModel:
     """
     GARCH(1,1) one-step-ahead volatility forecaster.
