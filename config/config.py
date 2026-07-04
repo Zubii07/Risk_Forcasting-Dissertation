@@ -52,6 +52,9 @@ REBALANCE_FREQ      = "D"     # Daily rebalancing
 TRANSACTION_COST    = 0.001   # 0.1% per trade
 RISK_FREE_RATE      = 0.02    # 2% annual (for Sharpe/Sortino)
 CONFIDENCE_LEVEL    = 0.95    # For VaR/CVaR estimation
+MAX_WEIGHT           = 0.30
+MIN_RETURN_TARGET    = 0.06     # annualised, used in Experiment 3 (constraint A)
+EWMA_RETURN_SPAN     = 60       # days, compact expected-return proxy (Experiment 3)
 
 # --- Paths ---
 RAW_DATA_PATH       = "data/raw/"
