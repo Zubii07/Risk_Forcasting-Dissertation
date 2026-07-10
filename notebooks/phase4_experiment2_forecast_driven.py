@@ -2,21 +2,26 @@ import os
 import sys
 import time
 import warnings
+import importlib
 import numpy as np
 import pandas as pd
 import cvxpy as cp
 from scipy.stats import norm
 
-from config.config import (
-    PROCESSED_DATA_PATH, METRICS_PATH,
-    PORTFOLIO_TICKERS, CONFIDENCE_LEVEL, MAX_WEIGHT,
-    TRANSACTION_COST, REBALANCE_FREQ,
-)
-warnings.filterwarnings("ignore")
-
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+
+config = importlib.import_module("config.config")
+PROCESSED_DATA_PATH = config.PROCESSED_DATA_PATH
+METRICS_PATH = config.METRICS_PATH
+PORTFOLIO_TICKERS = config.PORTFOLIO_TICKERS
+CONFIDENCE_LEVEL = config.CONFIDENCE_LEVEL
+MAX_WEIGHT = config.MAX_WEIGHT
+NO_TRADE_THRESHOLD = config.NO_TRADE_THRESHOLD
+TRANSACTION_COST = config.TRANSACTION_COST
+REBALANCE_FREQ = config.REBALANCE_FREQ
+warnings.filterwarnings("ignore")
 
 TRADING_DAYS = 252
 ALPHA        = 1 - CONFIDENCE_LEVEL
@@ -123,6 +128,15 @@ def solve_forecast_driven_cvar(cvar_vec: np.ndarray, corr: np.ndarray,
         return np.ones(N) / N, np.nan
 
 
+def apply_no_trade_rule(candidate_weights: np.ndarray,
+                         previous_weights: np.ndarray,
+                         threshold: float):
+    distance = np.abs(candidate_weights - previous_weights).sum()
+    if distance < threshold:
+        return previous_weights.copy(), True, float(distance)
+    return candidate_weights, False, float(distance)
+
+
 # STEP 4: Rolling rebalance loop — per model
 print("\n[3/7] Running forecast-driven optimisation for each model...")
 
@@ -142,6 +156,9 @@ for model_name, cvar_df in cvar_forecasts.items():
 
     weights_history = pd.DataFrame(index=rebal_dates, columns=asset_cols, dtype=float)
     solve_times = []
+    skipped_rebalances = 0
+    traded_rebalances = 0
+    prev_weights = np.ones(n_assets) / n_assets
 
     t0_total = time.time()
     for i, dt in enumerate(rebal_dates):
@@ -151,31 +168,58 @@ for model_name, cvar_df in cvar_forecasts.items():
         t0 = time.time()
         w, _ = solve_forecast_driven_cvar(cvar_vec, corr_train, MAX_WEIGHT)
         solve_times.append(time.time() - t0)
-        weights_history.loc[dt] = w
+
+        w_final, skipped, l1_distance = apply_no_trade_rule(
+            np.asarray(w, dtype=float), prev_weights, NO_TRADE_THRESHOLD
+        )
+        if skipped:
+            skipped_rebalances += 1
+        else:
+            traded_rebalances += 1
+        prev_weights = w_final.copy()
+        weights_history.loc[dt] = w_final
+
+        if (i + 1) % 20 == 0 or i == len(rebal_dates) - 1:
+            print(f"       [{i+1}/{len(rebal_dates)}] {dt.date()}"
+                  f" | L1 change={l1_distance:.4f}")
 
     total_time = time.time() - t0_total
     print(f"     {len(rebal_dates)} rebalances | "
           f"total={total_time:.2f}s | avg={np.mean(solve_times)*1000:.1f}ms")
+    print(f"     No-trade threshold      : {NO_TRADE_THRESHOLD:.3f} (L1 distance)")
+    print(f"     Skipped rebalances      : {skipped_rebalances}")
+    print(f"     Traded rebalances        : {traded_rebalances}")
 
     daily_weights = weights_history.reindex(returns.loc[test_start:test_end].index).ffill()
     daily_weights = daily_weights.fillna(1.0 / n_assets)
     port_returns = (daily_weights.shift(1) * returns.loc[test_start:test_end]).sum(axis=1)
     turnover = daily_weights.diff().abs().sum(axis=1).fillna(0)
     port_returns_net = (port_returns - turnover * TRANSACTION_COST).dropna()
+    annual_cost_drag = turnover.mean() * TRANSACTION_COST * TRADING_DAYS
+
+    print(f"     Avg daily turnover       : {turnover.mean():.4f}")
+    print(f"     Estimated annual cost drag: {annual_cost_drag*100:.2f}%")
 
     results[model_name] = {
         "returns": port_returns_net,
         "weights": weights_history,
         "turnover": turnover.mean(),
+        "annual_cost_drag": annual_cost_drag,
         "total_time": total_time,
         "avg_time_ms": np.mean(solve_times) * 1000,
         "n_rebalances": len(rebal_dates),
+        "skipped_rebalances": skipped_rebalances,
+        "traded_rebalances": traded_rebalances,
     }
     timing_rows.append({
         "Model": model_name,
         "N Rebalances": len(rebal_dates),
         "Total Opt Time (s)": round(total_time, 2),
         "Avg Opt Time/Rebalance (ms)": round(np.mean(solve_times)*1000, 1),
+        "Avg Turnover": round(turnover.mean(), 4),
+        "Est. Annual Cost Drag (%)": round(annual_cost_drag*100, 4),
+        "Skipped Rebalances": skipped_rebalances,
+        "Traded Rebalances": traded_rebalances,
     })
 
 # STEP 5: Performance summary — all models
@@ -202,8 +246,11 @@ for model_name, res in results.items():
         "Max DD (%)":      round(mdd*100, 2),
         "CVaR 95% (%)":    round(cv95*100, 4),
         "Avg Turnover":    round(res["turnover"], 4),
+        "Est. Annual Cost Drag (%)": round(res["annual_cost_drag"]*100, 4),
         "Total Opt Time (s)": round(res["total_time"], 2),
         "Avg Opt Time/Rebalance (ms)": round(res["avg_time_ms"], 1),
+        "Skipped Rebalances": res["skipped_rebalances"],
+        "Traded Rebalances": res["traded_rebalances"],
         "Inputs Used": "CVaR forecast + fixed correlation only",
     })
 
