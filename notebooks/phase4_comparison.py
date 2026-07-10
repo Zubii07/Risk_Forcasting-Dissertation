@@ -13,6 +13,7 @@ Also produces:
 import os
 import sys
 import warnings
+import importlib
 
 import numpy as np
 import pandas as pd
@@ -22,12 +23,15 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 
-from config.config import PROCESSED_DATA_PATH, METRICS_PATH, FIGURES_PATH
-warnings.filterwarnings("ignore")
-
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+
+config = importlib.import_module("config.config")
+PROCESSED_DATA_PATH = config.PROCESSED_DATA_PATH
+METRICS_PATH = config.METRICS_PATH
+FIGURES_PATH = config.FIGURES_PATH
+warnings.filterwarnings("ignore")
 
 
 plt.style.use("seaborn-v0_8-darkgrid")
@@ -57,9 +61,14 @@ exp3_ret = None
 if os.path.exists(exp3_path):
     exp3_ret = pd.read_csv(exp3_path, index_col=0, parse_dates=True).iloc[:, 0]
 
+baseline_path = f"{METRICS_PATH}phase4_pre_fix_baseline.csv"
+baseline_df = pd.read_csv(baseline_path) if os.path.exists(baseline_path) else pd.DataFrame()
+
 print(f" Exp1 (Historical): {len(exp1_ret)} days")
 print(f" Exp2 (Forecast-Driven): {len(exp2_returns)} models")
 print(f" Exp3 (Forecast + A+C): {'loaded' if exp3_ret is not None else 'not found'}")
+if not baseline_df.empty:
+    print(f" Baseline snapshot: loaded from {baseline_path}")
 
 # STEP 2: Unified performance table
 print("\n[2/6] Building unified performance comparison...")
@@ -91,6 +100,50 @@ if exp3_ret is not None:
 comparison_df = pd.DataFrame(comparison_rows).set_index("Experiment")
 print("\n" + comparison_df.to_string())
 comparison_df.to_csv(f"{METRICS_PATH}phase4_all_experiments_comparison.csv")
+
+
+def load_current_summary_rows():
+    rows = []
+
+    exp1_summary_path = f"{METRICS_PATH}exp1_historical_summary.csv"
+    if os.path.exists(exp1_summary_path):
+        summary = pd.read_csv(exp1_summary_path)
+        rows.append(summary[["Experiment", "Ann. Return (%)", "Sharpe", "Max DD (%)", "Avg Turnover", "Est. Annual Cost Drag (%)"]])
+
+    exp2_summary_path = f"{METRICS_PATH}exp2_forecast_driven_summary.csv"
+    if os.path.exists(exp2_summary_path):
+        summary = pd.read_csv(exp2_summary_path)
+        rows.append(summary[["Experiment", "Ann. Return (%)", "Sharpe", "Max DD (%)", "Avg Turnover", "Est. Annual Cost Drag (%)"]])
+
+    exp3_summary_path = f"{METRICS_PATH}exp3_forecast_ac_summary.csv"
+    if os.path.exists(exp3_summary_path):
+        summary = pd.read_csv(exp3_summary_path)
+        rows.append(summary[["Experiment", "Ann. Return (%)", "Sharpe", "Max DD (%)", "Avg Turnover", "Est. Annual Cost Drag (%)"]])
+
+    if not rows:
+        return pd.DataFrame()
+    return pd.concat(rows, ignore_index=True)
+
+
+def build_before_after_table(baseline: pd.DataFrame, current: pd.DataFrame):
+    if baseline.empty or current.empty:
+        return pd.DataFrame()
+    merged = baseline.merge(current, on="Experiment", how="inner", suffixes=(" (Before)", " (After)"))
+    ordered_cols = ["Experiment"]
+    for metric in ["Ann. Return (%)", "Sharpe", "Max DD (%)", "Avg Turnover", "Est. Annual Cost Drag (%)"]:
+        before_col = f"{metric} (Before)"
+        after_col = f"{metric} (After)"
+        if before_col in merged.columns and after_col in merged.columns:
+            ordered_cols.extend([before_col, after_col])
+    return merged[ordered_cols]
+
+
+current_summary_df = load_current_summary_rows()
+before_after_df = build_before_after_table(baseline_df, current_summary_df)
+if not before_after_df.empty:
+    print("\n[2/6b] Before/after comparison (pre-fix vs current run)...")
+    print(before_after_df.to_string(index=False))
+    before_after_df.to_csv(f"{METRICS_PATH}phase4_before_after_comparison.csv", index=False)
 
 # STEP 3: Computational performance comparison
 print("\n[3/6] Computational performance comparison...")
@@ -329,6 +382,7 @@ print("[6/6] Comparison complete.")
 print("=" * 60)
 print("  Files saved:")
 print(" phase4_all_experiments_comparison.csv")
+print(" phase4_before_after_comparison.csv")
 print(" phase4_computational_comparison.csv")
 print(" Charts saved:")
 print(" A1_all_experiments_cumulative_returns.png")
