@@ -211,7 +211,7 @@ CVaR-optimised strategies substantially outperformed the EqualWeight benchmark d
 
 - Random seed 42 fixed for PyTorch/NumPy in Phase 3.
 - Walk-forward splits use fixed ratios — no random shuffling.
-- Price data may vary marginally by download date due to retrospective adjustments (splits/dividends) — expected and immaterial to conclusions.
+- Price data may vary marginally by download date due to retrospective adjustments (splits/dividends) expected and immaterial to conclusions.
 - Phase 3 GPU results may vary slightly between Colab sessions due to GPU non-determinism; this does not affect the qualitative conclusions.
 
 ---
