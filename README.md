@@ -1,6 +1,6 @@
 # Deep Learning-Based Downside Risk Forecasting & CVaR Portfolio Optimisation Under Market Stress Conditions
 
-A dissertation project comparing classical econometric models (HistVol, GARCH, GJR-GARCH) against deep learning models (LSTM, Transformer) for volatility/CVaR forecasting, and evaluating how forecast quality translates into portfolio-level risk management under CVaR optimisation — with a dedicated stress-testing framework across three historical market crises.
+A dissertation project comparing classical econometric models (HistVol, GARCH, GJR-GARCH) against deep learning models (LSTM, Transformer) for volatility/CVaR forecasting, and evaluating how forecast quality translates into portfolio level risk management under CVaR optimisation with a dedicated stress testing framework across three historical market crises.
 
 ---
 
