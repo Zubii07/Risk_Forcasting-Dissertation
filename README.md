@@ -3,7 +3,7 @@
 A dissertation project comparing classical econometric models (HistVol, GARCH, GJR-GARCH) against deep learning models (LSTM, Transformer) for volatility/CVaR forecasting, and evaluating how forecast quality translates into portfolio level risk management under CVaR optimisation with a dedicated stress testing framework across three historical market crises.
 
 <p align="center">
-  <img src="results/figures/35_dissertation_summary.png" width="900">
+  <img src="results/figures/35_dissertation_summary.png" width="700">
 </p>
 <p align="center"><em>Figure 0 — Master dissertation summary: all strategies, all metrics, full test period.</em></p>
 
