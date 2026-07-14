@@ -3,7 +3,7 @@
 A dissertation project comparing classical econometric models (HistVol, GARCH, GJR-GARCH) against deep learning models (LSTM, Transformer) for volatility/CVaR forecasting, and evaluating how forecast quality translates into portfolio level risk management under CVaR optimisation with a dedicated stress testing framework across three historical market crises.
 
 <p align="center">
-  <img src="results/figures/35_dissertation_summary.png" width="600">
+  <img src="results/figures/35_dissertation_summary.png" width="700">
 </p>
 <p align="center"><em>Figure 0 — Master dissertation summary: all strategies, all metrics, full test period.</em></p>
 
@@ -80,7 +80,7 @@ risk_forecasting/
 Downloads and cleans price data, computes log returns, rolling volatility (10d/30d), VIX-based stress regime labels, and the walk-forward train/val/test split.
 
 <p align="center">
-  <img src="results/figures/05_train_val_test_split.png" width="600">
+  <img src="results/figures/05_train_val_test_split.png" width="700">
 </p>
 <p align="center"><em>Figure 1 — Walk-forward 70/15/15 train/validation/test split (no shuffling, no lookahead).</em></p>
 
@@ -90,7 +90,7 @@ Historical Volatility (30d) and GARCH(1,1) as classical volatility forecasts, co
 **Enhancement:** GJR-GARCH added to capture the leverage effect (asymmetric volatility response to negative shocks), plus a regime-split VaR breach table (Normal vs Stress).
 
 <p align="center">
-  <img src="results/figures/E2_regime_var_breaches.png" width="600">
+  <img src="results/figures/E2_regime_var_breaches.png" width="700">
 </p>
 <p align="center"><em>Figure 2 — VaR breach rates by regime: classical models breach their target rate far more often during market stress than during normal conditions.</em></p>
 
@@ -100,7 +100,7 @@ LSTM (2-layer, 64 units) and Transformer (2-layer, 4-head, d_model=64) trained o
 **Enhancement:** Diebold-Mariano statistical significance tests comparing all model pairs, Normal vs Stress regime performance split, and an attention-weight proxy analysis.
 
 <p align="center">
-  <img src="results/figures/E6_dm_tests.png" width="600">
+  <img src="results/figures/E6_dm_tests.png" width="700">
 </p>
 <p align="center"><em>Figure 3 — Diebold-Mariano test results: both LSTM and Transformer significantly outperform GARCH and HistVol (p < 0.001) on the full test period.</em></p>
 
@@ -116,15 +116,15 @@ This phase was rebuilt following supervisor feedback questioning whether the dee
 | **Exp 3 — Forecast-Driven + A+C** | Exp 2 + a minimum-return constraint (A, via a compact 60-day EWMA return proxy) + regime-aware allocation blending (C, based on VIX regime) | Tests whether return can be improved without abandoning the forecast-driven philosophy |
 
 <p align="center">
-  <img src="results/figures/D2_historical_vs_forecast_driven_workflow.png" width="700">
+  <img src="results/figures/D2_historical_vs_forecast_driven_workflow.png" width="750">
 </p>
 <p align="center"><em>Figure 4 — What the optimiser actually sees: Historical (top) vs Forecast-Driven (bottom). Experiment 2 never receives the raw 252-day return matrix.</em></p>
 <p align="center">
-  <img src="results/figures/A2_performance_metrics_comparison.png" width="700">
+  <img src="results/figures/A2_performance_metrics_comparison.png" width="750">
 </p>
 <p align="center"><em>Figure 5 — Performance metrics across all experiments: Historical baseline vs each forecast-driven model vs the A+C-enhanced variant.</em></p>
 <p align="center">
-  <img src="results/figures/A4_weight_allocation_heatmaps.png" width="800">
+  <img src="results/figures/A4_weight_allocation_heatmaps.png" width="850">
 </p>
 <p align="center"><em>Figure 6 — Portfolio weight allocation over time: Historical (left) allocates dynamically, while forecast-driven variants (centre, right) allocate more statically due to the fixed correlation structure.</em></p>
 
